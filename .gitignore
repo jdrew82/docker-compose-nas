@@ -3,6 +3,7 @@
 docker-compose.override.yml
 /homepage/logs
 /homepage/*.yaml
+/homepage/custom*
 /sonarr
 !/sonarr/.gitkeep
 /radarr
@@ -25,4 +26,15 @@ docker-compose.override.yml
 /adguardhome/work
 !/adguardhome/work/.gitkeep
 /sabnzbd
-!/sabnzbd/.gitkeep
+!/sabnzbd/docker-compose.yml
+!overseerr/docker-compose.yml
+/overseerr/*
+/overseerr/db/*
+/overseerr/logs/*
+/plex/*
+/recyclarr/*
+!/unifi/docker-compose.yml
+!/unifi/init-mongo.js
+/unifi/*
+!/homarr/docker-compose.yml
+/homarr/*
