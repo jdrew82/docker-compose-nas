@@ -106,111 +106,112 @@ services:
       - homepage.widget.type=prowlarr
       - homepage.widget.url=http://prowlarr:9696/prowlarr
       - homepage.widget.key=${PROWLARR_API_KEY}
-  qbittorrent:
-    image: lscr.io/linuxserver/qbittorrent:libtorrentv1
-    container_name: qbittorrent
-    environment:
-      - PUID=${USER_ID}
-      - PGID=${GROUP_ID}
-      - TZ=${TIMEZONE}
-      - WEBUI_PORT=8080
-    volumes:
-      - ./qbittorrent:/config
-      - ${DOWNLOAD_ROOT}:/data/torrents
-    restart: always
-    network_mode: "service:vpn"
-    depends_on:
-      vpn:
-        condition: service_healthy
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.qbittorrent.rule=(Host(`${HOSTNAME}`) && PathPrefix(`/qbittorrent`))
-      - traefik.http.routers.qbittorrent.tls=true
-      - traefik.http.routers.qbittorrent.tls.certresolver=myresolver
-      - traefik.http.services.qbittorrent.loadbalancer.server.port=8080
-      - traefik.http.routers.qbittorrent.middlewares=qbittorrent-strip-slash,qbittorrent-stripprefix
-      # https://github.com/qbittorrent/qBittorrent/issues/5693#issuecomment-552146296
-      - traefik.http.middlewares.qbittorrent-stripprefix.stripPrefix.prefixes=/qbittorrent
-      # https://community.traefik.io/t/middleware-to-add-the-if-needed/1895/19
-      - traefik.http.middlewares.qbittorrent-strip-slash.redirectregex.regex=(^.*\/qbittorrent$$)
-      - traefik.http.middlewares.qbittorrent-strip-slash.redirectregex.replacement=$$1/
-      - traefik.http.middlewares.qbittorrent-strip-slash.redirectregex.permanent=false
-      #- com.centurylinklabs.watchtower.depends-on=/vpn
-      - homepage.group=Download
-      - homepage.name=qBittorrent
-      - homepage.icon=qbittorrent.png
-      - homepage.href=/qbittorrent
-      - homepage.description=Bittorrent client
-      - homepage.weight=5
-      - homepage.widget.type=qbittorrent
-      - homepage.widget.url=http://vpn:8080
-      - homepage.widget.username=admin
-      - homepage.widget.password=adminadmin
-  vpn:
-    image: thrnz/docker-wireguard-pia
-    container_name: vpn
-    volumes:
-      - ./pia:/pia
-      - ./pia-shared:/pia-shared
-    cap_add:
-      - NET_ADMIN
-      - SYS_MODULE
-    environment:
-      - LOC=${PIA_LOCATION}
-      - USER=${PIA_USER}
-      - PASS=${PIA_PASS}
-      - LOCAL_NETWORK=${PIA_LOCAL_NETWORK}
-      - PORT_FORWARDING=1
-      - PORT_PERSIST=1
-      - PORT_SCRIPT=/pia-shared/portupdate-qbittorrent.sh
-      - EXIT_ON_FATAL=1
-    sysctls:
-      - net.ipv4.conf.all.src_valid_mark=1
-      - net.ipv6.conf.default.disable_ipv6=1
-      - net.ipv6.conf.all.disable_ipv6=1
-      - net.ipv6.conf.lo.disable_ipv6=1
-    healthcheck:
-      test: ping -c 1 www.google.com || exit 1
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    restart: always
-    labels:
-      # network mode is not supported: https://github.com/containrrr/watchtower/issues/1286#issuecomment-1214291660
-      - com.centurylinklabs.watchtower.enable=false
-  jellyfin:
-    image: lscr.io/linuxserver/jellyfin
-    container_name: jellyfin
-    environment:
-      - PUID=${USER_ID}
-      - PGID=${GROUP_ID}
-      - TZ=${TIMEZONE}
-      - JELLYFIN_PublishedServerUrl=${HOSTNAME}/jellyfin
-    volumes:
-      - ./jellyfin:/config
-      - ${DATA_ROOT}:/data
-    ports:
-      - "7359:7359/udp"
-      - "1900:1900/udp"
-    devices:
-      - /dev/dri/renderD128:/dev/dri/renderD128
-      - /dev/dri/card0:/dev/dri/card0
-    restart: always
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.jellyfin.rule=(Host(`${HOSTNAME}`) && PathPrefix(`/jellyfin`))
-      - traefik.http.routers.jellyfin.tls=true
-      - traefik.http.routers.jellyfin.tls.certresolver=myresolver
-      - traefik.http.services.jellyfin.loadbalancer.server.port=8096
-      - homepage.group=Media
-      - homepage.name=Jellyfin
-      - homepage.icon=jellyfin.png
-      - homepage.href=/jellyfin
-      - homepage.description=Media server
-      - homepage.weight=3
-      - homepage.widget.type=jellyfin
-      - homepage.widget.url=http://jellyfin:8096/jellyfin
-      - homepage.widget.key=${JELLYFIN_API_KEY}
+  # qbittorrent:
+  #   image: lscr.io/linuxserver/qbittorrent:libtorrentv1
+  #   container_name: qbittorrent
+  #   environment:
+  #     - PUID=${USER_ID}
+  #     - PGID=${GROUP_ID}
+  #     - TZ=${TIMEZONE}
+  #     - WEBUI_PORT=8080
+  #   volumes:
+  #     - ./qbittorrent:/config
+  #     - ${DOWNLOAD_ROOT}:/data/torrents
+  #   restart: always
+  #   network_mode: "service:vpn"
+  #   depends_on:
+  #     vpn:
+  #       condition: service_healthy
+  #   labels:
+  #     - traefik.enable=true
+  #     - traefik.http.routers.qbittorrent.rule=(Host(`${HOSTNAME}`) && PathPrefix(`/qbittorrent`))
+  #     - traefik.http.routers.qbittorrent.tls=true
+  #     - traefik.http.routers.qbittorrent.tls.certresolver=myresolver
+  #     - traefik.http.services.qbittorrent.loadbalancer.server.port=8080
+  #     - traefik.http.routers.qbittorrent.middlewares=qbittorrent-strip-slash,qbittorrent-stripprefix
+  #     # https://github.com/qbittorrent/qBittorrent/issues/5693#issuecomment-552146296
+  #     - traefik.http.middlewares.qbittorrent-stripprefix.stripPrefix.prefixes=/qbittorrent
+  #     # https://community.traefik.io/t/middleware-to-add-the-if-needed/1895/19
+  #     - traefik.http.middlewares.qbittorrent-strip-slash.redirectregex.regex=(^.*\/qbittorrent$$)
+  #     - traefik.http.middlewares.qbittorrent-strip-slash.redirectregex.replacement=$$1/
+  #     - traefik.http.middlewares.qbittorrent-strip-slash.redirectregex.permanent=false
+  #     #- com.centurylinklabs.watchtower.depends-on=/vpn
+  #     - homepage.group=Download
+  #     - homepage.name=qBittorrent
+  #     - homepage.icon=qbittorrent.png
+  #     - homepage.href=/qbittorrent
+  #     - homepage.description=Bittorrent client
+  #     - homepage.weight=5
+  #     - homepage.widget.type=qbittorrent
+  #     - homepage.widget.url=http://vpn:8080
+  #     - homepage.widget.username=admin
+  #     - homepage.widget.password=adminadmin
+  # vpn:
+  #   image: thrnz/docker-wireguard-pia
+  #   container_name: vpn
+  #   volumes:
+  #     - ./pia:/pia
+  #     - ./pia-shared:/pia-shared
+  #   cap_add:
+  #     - NET_ADMIN
+  #     - SYS_MODULE
+  #   environment:
+  #     - LOC=${PIA_LOCATION}
+  #     - USER=${PIA_USER}
+  #     - PASS=${PIA_PASS}
+  #     - LOCAL_NETWORK=${PIA_LOCAL_NETWORK}
+  #     - PORT_FORWARDING=1
+  #     - PORT_PERSIST=1
+  #     - PORT_SCRIPT=/pia-shared/portupdate-qbittorrent.sh
+  #     - EXIT_ON_FATAL=1
+  #   sysctls:
+  #     - net.ipv4.conf.all.src_valid_mark=1
+  #     - net.ipv6.conf.default.disable_ipv6=1
+  #     - net.ipv6.conf.all.disable_ipv6=1
+  #     - net.ipv6.conf.lo.disable_ipv6=1
+  #   healthcheck:
+  #     test: ping -c 1 www.google.com || exit 1
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #   restart: always
+  #   labels:
+  #     # network mode is not supported: https://github.com/containrrr/watchtower/issues/1286#issuecomment-1214291660
+  #     - com.centurylinklabs.watchtower.enable=false
+  # jellyfin:
+  #   image: lscr.io/linuxserver/jellyfin
+  #   container_name: jellyfin
+  #   environment:
+  #     - PUID=${USER_ID}
+  #     - PGID=${GROUP_ID}
+  #     - TZ=${TIMEZONE}
+  #     - JELLYFIN_PublishedServerUrl=${HOSTNAME}/jellyfin
+  #   volumes:
+  #     - ./jellyfin:/config
+  #     - ${DATA_ROOT}:/data
+  #   ports:
+  #     - 8096:8096
+  #     - "7359:7359/udp"
+  #     - "1900:1900/udp"
+  #   devices:
+  #     - /dev/dri/renderD128:/dev/dri/renderD128
+  #     - /dev/dri/card0:/dev/dri/card0
+  #   restart: always
+  #   labels:
+  #     - traefik.enable=true
+  #     - traefik.http.routers.jellyfin.rule=(Host(`${HOSTNAME}`) && PathPrefix(`/jellyfin`))
+  #     - traefik.http.routers.jellyfin.tls=true
+  #     - traefik.http.routers.jellyfin.tls.certresolver=myresolver
+  #     - traefik.http.services.jellyfin.loadbalancer.server.port=8096
+  #     - homepage.group=Media
+  #     - homepage.name=Jellyfin
+  #     - homepage.icon=jellyfin.png
+  #     - homepage.href=/jellyfin
+  #     - homepage.description=Media server
+  #     - homepage.weight=3
+  #     - homepage.widget.type=jellyfin
+  #     - homepage.widget.url=http://jellyfin:8096/jellyfin
+  #     - homepage.widget.key=${JELLYFIN_API_KEY}
   homepage:
     image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
