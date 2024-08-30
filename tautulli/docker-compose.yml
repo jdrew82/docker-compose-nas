@@ -1,0 +1,27 @@
+---
+version: "2.1"
+services:
+  tautulli:
+    image: tautulli/tautulli:latest
+    container_name: tautulli
+    environment:
+      - PUID=${USER_ID}
+      - PGID=${GROUP_ID}
+      - TZ=${TIMEZONE}
+    volumes:
+      - ./tautulli:/config
+    ports:
+      - 8181:8181
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.tautulli.rule=(Host(`${HOSTNAME}`) && PathPrefix(`/tautulli`) || PathPrefix(`/tautulli`))
+      - traefik.http.routers.tautulli.tls=true
+      - traefik.http.routers.tautulli.tls.certresolver=myresolver
+      - traefik.http.services.tautulli.loadbalancer.server.port=8181
+      - homepage.group=Media
+      - homepage.name=Tautulli
+      - homepage.icon=tautulli.png
+      - homepage.href=/tautulli
+      - homepage.description=Plex Usage Tracker
+      - homepage.weight=6

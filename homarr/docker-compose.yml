@@ -1,0 +1,35 @@
+version: '3.9'
+
+services:
+  homarr:
+    image: ghcr.io/ajnart/homarr:latest
+    container_name: homarr
+    environment:
+      - PUID=${USER_ID}
+      - PGID=${GROUP_ID}
+      - TZ=${TIMEZONE}
+      - BASE_URL=${HOSTNAME}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./homarr/configs:/app/data/configs
+      - ./homarr/data:/data
+      - ./homarr/icons:/app/public/icons
+    restart: always
+    ports:
+      - "7575:7575"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.homarr.rule=(Host(`homarr.${HOSTNAME}`) && PathPrefix(`/`))
+      - traefik.http.routers.homarr.tls=true
+      - traefik.http.routers.homarr.tls.certresolver=myresolver
+      - traefik.http.routers.homarr.tls.domains.main = `${HOSTNAME}`
+      - traefik.http.routers.homarr.tls.domains.sans = `*.${HOSTNAME}`
+      - traefik.http.services.homarr.loadbalancer.server.port=7575
+      - homepage.group=Download
+      - homepage.name=homarr
+      - homepage.icon=homarr.png
+      - homepage.href=/homarr
+      - homepage.description=Homepage
+      - homepage.weight=6
+      - homepage.widget.type=homarr
+      - homepage.widget.url=http://homarr.${HOSTNAME}

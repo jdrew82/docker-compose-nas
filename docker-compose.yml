@@ -36,6 +36,8 @@ services:
       - PUID=${USER_ID}
       - PGID=${GROUP_ID}
       - TZ=${TIMEZONE}
+    ports:
+      - "8989:8989"
     volumes:
       - ./sonarr:/config
       - ${DATA_ROOT}:/data
@@ -62,6 +64,8 @@ services:
       - PUID=${USER_ID}
       - PGID=${GROUP_ID}
       - TZ=${TIMEZONE}
+    ports:
+      - "7878:7878"
     volumes:
       - ./radarr:/config
       - ${DATA_ROOT}:/data

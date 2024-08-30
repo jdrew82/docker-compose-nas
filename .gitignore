@@ -33,8 +33,7 @@ docker-compose.override.yml
 /overseerr/logs/*
 /plex/*
 /recyclarr/*
-!/unifi/docker-compose.yml
-!/unifi/init-mongo.js
-/unifi/*
-!/homarr/docker-compose.yml
 /homarr/*
+!/homarr/docker-compose.yml
+/tautulli/*
+!/tautulli/docker-compose.yml
